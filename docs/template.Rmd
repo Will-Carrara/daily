@@ -1,0 +1,51 @@
+---
+title: "`r title`"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output: 
+  html_document:
+      css: ../css/light.css
+---
+
+<div class="dropdown">
+  <button class="dropbtn"><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#000000" class="bi bi-list" viewBox="0 0 16 16">
+  <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+</svg>
+</button>
+
+<div class="dropdown-content">
+<a href="eemetric.html">eeMETRIC</a>
+<a href="geesebal.html">geeSEBAL</a>
+<a href="disalexi.html">DisALEXI</a>
+<a href="ptjpl.html">PT-JPL</a>
+<a href="sims.html">SIMS</a>
+<a href="ssebop.html">SSEBop</a> 
+</div>
+</div>
+
+
+```{r, include=FALSE}
+# table package
+library(kableExtra)
+
+# configure graphs
+knitr::opts_chunk$set(comment=NA, echo=FALSE, fig.width=20, fig.height=9, fig.align="center", warning=FALSE)
+
+# set wider print outputs
+options(width=500)
+
+# script code
+source('../utils/utils.R')
+```
+
+```{r}
+# plot timeseries
+visualize(df, crop, state, year, model)
+```
+
+```{r}
+# add table 
+df %>%
+  kbl() %>%
+  kable_styling()
+```
+
