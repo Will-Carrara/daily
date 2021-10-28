@@ -5,9 +5,10 @@ options(warn=-1)
 
 # script code
 source('../utils/utils.R')
+source('../data/polygons.R')
 
 # read data
-data = read.csv("../data/polygons.csv", header=TRUE)
+data = polygons
 
 # generate home page
 rmarkdown::render("index.Rmd", output_file='index.html') 
@@ -23,24 +24,22 @@ for (i in 1:nrow(data)) {
     for (model in models) {
     
         # get row information
-        row <- data[i,]
+        row = data[i,]
         
         # get crop name
-        crop = row['name']
+        crop = row$name
         
         # get state 
-        state = row['state']
+        state = row$state
         
         # title to pass to html
         title = model
         
         # get spatial coordinates
-        geometry = row['geometry']
+        geometry = unlist(row$geometry)
         
         # crop type 
-        cdl = row['cdl']
-        
-        geom = as.list(strsplit(geometry[[1]], ",")[[1]])
+        cdl = row$cdl
         
         # make api request for monthly data
         monthly = request(geometry, model, crop_type, interval='monthly', year)
