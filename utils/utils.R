@@ -109,3 +109,10 @@ visualize = function (df, crop, state, year, model) {
     title(xlab="Month", cex.lab=2, line=4)
     title(ylab="% Error", cex.lab=2, line=2, outer=TRUE, adj=.56)
 }
+
+# beautiful table 
+nice_table = function (df) {
+    df %>%
+        kbl() %>%
+        kable_styling()
+}

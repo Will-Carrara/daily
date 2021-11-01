@@ -19,9 +19,16 @@ models = c('eeMETRIC', 'geeSEBAL', 'DisALEXI', 'PTJPL', 'SIMS', 'SSEBop')
 # request year
 year = 2020
 
-# generate website 
-for (i in 1:nrow(data)) {
-    for (model in models) {
+# generate website
+for (model in models) {
+    # empty containers
+    count = 0
+    dfs = c()
+    crops = c()
+    states = c()
+    
+    for (i in 1:nrow(data)) {
+        count = count + 1
     
         # get row information
         row = data[i,]
@@ -46,7 +53,7 @@ for (i in 1:nrow(data)) {
         
         # make api request for daily data
         daily = request(geometry, model, crop_type, interval='daily', year)
-       
+        
         # aggregate daily data 
         daily_agg = rowsum(daily$et, format(daily$time, "%Y-%m"))
         monthly$daily = daily_agg
@@ -56,13 +63,17 @@ for (i in 1:nrow(data)) {
         names(df) = c("time", "monthly", "daily")
         
         # calculate absolute difference 
-        df$abs_diff = df$monthly - df$daily
+        df$abs_diff = abs(df$monthly - df$daily)
         
         # calculate mean percent difference
-        df$perc_diff = round(((df$monthly - df$daily) / (df$monthly))*100, 2)
+        df$perc_diff = abs(round(((df$monthly - df$daily) / (df$monthly))*100, 2))
         
-        # generate report
-        rmarkdown::render("template.Rmd", output_file=paste0(tolower(model), '.html')) 
+        # store all the data
+        dfs[[count]] = df
+        crops = c(crops, crop)
+        states = c(states, state)
     }
+    # generate report
+    rmarkdown::render("template.Rmd", output_file=paste0(tolower(model), '.html')) 
 }
 
