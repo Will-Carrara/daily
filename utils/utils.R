@@ -1,6 +1,9 @@
 # requests
 library(httr)
 
+# table package
+library(kableExtra)
+
 # api call
 request = function (geometry, model, crop_type, interval, year) {
     
