@@ -56,16 +56,16 @@ visualize = function (df, crop, state, year, model) {
     
     # set color parameters for models
     if (model == 'eeMETRIC') {
-        daily_col = '#000CC8'
-        monthly_col = '#31609E'
+        daily_col = '#31609E'
+        monthly_col = '#5BBAF8'
     } else if (model == 'geeSEBAL') {
         daily_col = '#E8A417'
         monthly_col = '#E7B518'
     } else if (model == 'DisALEXI') {
         daily_col = '#9D702D'
-        monthly_col = '#63471D'
+        monthly_col = '#99916E'
     } else if (model == 'PTJPL') {
-        daily_col = '#DA6960'
+        daily_col = '#FF9C9C'
         monthly_col = '#DA302E'
     } else if (model == 'SIMS') {
         daily_col = '#78D481'

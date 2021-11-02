@@ -1,15 +1,11 @@
 # crop names
-name = c("Corn", "Cotton", "Alfalfa")
-
-# cdl code
-cdl = c(1, 2, 36)
+name = c("Almonds", "Cotton", "Alfalfa")
 
 # geometries 
-geometry = I(list(c(-121.34772777557373,38.336472428721294,
-                  -121.35154724121094,38.33633778055649,
-                  -121.35159015655519,38.33270218552158,
-                  -121.3453245162964,38.3325675303505,
-                  -121.34781360626222,38.33475564587652), 
+geometry = I(list(c(-120.62576293945314,37.506151284718605,
+                    -120.62576293945314,37.51299386065851,
+                    -120.62164306640626,37.51299386065851,
+                    -120.62164306640626,37.506151284718605), 
              c(-102.32717514038087,34.34049499917458,
                   -102.32987880706787,34.33819168010892,
                   -102.32940673828126,34.33532130166815,
@@ -28,6 +24,9 @@ geometry = I(list(c(-121.34772777557373,38.336472428721294,
 # location state 
 state = c("California", "Texas", "Utah")
 
+# data explorer link
+link = c("https://explore.etdata.org/custom#15/37.5061/-120.6213")
+
 # setup sample data for the analysis 
-polygons = data.frame(name, geometry, state, cdl)
-names(polygons) = c("name", "geometry", "state", "cdl")
+polygons = data.frame(name, geometry, state, link)
+names(polygons) = c("name", "geometry", "state", "link")

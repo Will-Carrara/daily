@@ -45,9 +45,6 @@ for (model in models) {
         # get spatial coordinates
         geometry = unlist(row$geometry)
         
-        # crop type 
-        cdl = row$cdl
-        
         # make api request for monthly data
         monthly = request(geometry, model, crop_type, interval='monthly', year)
         
@@ -67,6 +64,9 @@ for (model in models) {
         
         # calculate mean percent difference
         df$perc_diff = abs(round(((df$monthly - df$daily) / (df$monthly))*100, 2))
+        
+        print(crop)
+        print(df)
         
         # store all the data
         dfs[[count]] = df
