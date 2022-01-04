@@ -1,5 +1,5 @@
 # crop names
-name = c("Almonds", "Cotton", "Alfalfa")
+name = c("Almonds", "Cotton", "Alfalfa", "Barley")
 
 # geometries 
 geometry = I(list(c(-120.62576293945314,37.506151284718605,
@@ -17,16 +17,17 @@ geometry = I(list(c(-120.62576293945314,37.506151284718605,
                -112.98996448516847,38.3706649581718,
                -112.9878616333008,38.36901627960125,
                -112.98348426818849,38.370732250376875,
-               -112.98447132110597,38.373423887267386)
-             )
+               -112.98447132110597,38.373423887267386),
+             c(-108.00487518310548,44.25898556915958,
+               -108.00487518310548,44.26227419149492,
+               -107.99174308776857,44.26227419149492,
+               -107.99174308776857,44.25898556915958)
+    )
 )
 
 # location state 
-state = c("California", "Texas", "Utah")
-
-# data explorer link
-link = c("https://explore.etdata.org/custom#15/37.5061/-120.6213")
+state = c("California", "Texas", "Utah", "Wyoming")
 
 # setup sample data for the analysis 
-polygons = data.frame(name, geometry, state, link)
-names(polygons) = c("name", "geometry", "state", "link")
+polygons = data.frame(name, geometry, state)
+names(polygons) = c("name", "geometry", "state")

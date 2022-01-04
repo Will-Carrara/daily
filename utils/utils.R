@@ -1,10 +1,7 @@
 # requests
 library(httr)
 
-# table package
-library(kableExtra)
-
-# api call
+# api call (non-pixel based)
 request = function (geometry, model, crop_type, interval, year) {
     
     # dates for comparison
@@ -12,7 +9,8 @@ request = function (geometry, model, crop_type, interval, year) {
     end_date = paste0(year, '-12-31')
 
     # api server address
-    server = 'https://openet-raster-api.org/'
+    #server = 'https://openet-raster-api.org/'
+    server = 'http://127.0.0.1:8000/'
     
     # create query and make request
     response = POST(
@@ -40,6 +38,74 @@ request = function (geometry, model, crop_type, interval, year) {
     return (content)
 }
 
+# create empty dataframe
+full <- data.frame()
+
+# api call (pixel based)
+request_pixel = function (geometry, model, crop_type, interval, year) {
+    
+    # monthly date ranges
+    jan = c(paste0(year, '-01-01'), paste0(year, '-01-31'))
+    if (year == 2020 || year == 2016){
+        feb = c(paste0(year, '-02-01'), paste0(year, '-02-29'))
+    } else{
+        feb = c(paste0(year, '-02-01'), paste0(year, '-02-28'))
+    }
+    mar = c(paste0(year, '-03-01'), paste0(year, '-03-31'))
+    apr = c(paste0(year, '-04-01'), paste0(year, '-04-30'))
+    may = c(paste0(year, '-05-01'), paste0(year, '-05-31'))
+    jun = c(paste0(year, '-06-01'), paste0(year, '-06-30'))
+    jul = c(paste0(year, '-07-01'), paste0(year, '-07-31'))
+    aug = c(paste0(year, '-08-01'), paste0(year, '-08-31'))
+    sep = c(paste0(year, '-09-01'), paste0(year, '-09-30'))
+    oct = c(paste0(year, '-10-01'), paste0(year, '-10-31'))
+    nov = c(paste0(year, '-11-01'), paste0(year, '-11-30'))
+    dec = c(paste0(year, '-12-01'), paste0(year, '-12-31'))
+    
+    # list of months
+    months = list(jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec)
+    
+    # request one month at a time
+    for (m in months) {
+
+        # dates for comparison
+        start_date = m[1]
+        end_date = m[2]
+        
+        # api server address
+        #server = 'https://openet-raster-api.org/'
+        server = 'http://127.0.0.1:8000/'
+        
+        # create query and make request
+        response = POST(
+            url = paste0(server, 'timeseries/polygon'), 
+            query = list(admin_key = 'hello'),
+            body = list(
+                start_date = start_date,
+                end_date = end_date,
+                interval = interval,
+                geometry = geometry,
+                model = tolower(model),
+                variable = 'et',
+                ref_et_source = 'gridmet',
+                pixel_aggregation = 'mean',
+                moving_average = 0,
+                units = 'metric',
+                provisional = 'False',
+                best_effort = 'False',
+                output_file_format = 'csv'
+            ),
+            encode = 'json')
+        
+        # obtain content of api return 
+        content = as.data.frame(content(response, as="parsed", type="text/csv"))
+        
+        # combine data
+        full = rbind(full, content)
+    }
+    return (full)
+}
+
 
 # beautiful plotting 
 visualize = function (df, crop, state, year, model) {
@@ -54,26 +120,10 @@ visualize = function (df, crop, state, year, model) {
     # x-axis for plotting
     months = c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sept","Oct","Nov","Dec")
     
-    # set color parameters for models
-    if (model == 'eeMETRIC') {
-        daily_col = '#31609E'
-        monthly_col = '#5BBAF8'
-    } else if (model == 'geeSEBAL') {
-        daily_col = '#E8A417'
-        monthly_col = '#E7B518'
-    } else if (model == 'DisALEXI') {
-        daily_col = '#9D702D'
-        monthly_col = '#99916E'
-    } else if (model == 'PTJPL') {
-        daily_col = '#FF9C9C'
-        monthly_col = '#DA302E'
-    } else if (model == 'SIMS') {
-        daily_col = '#78D481'
-        monthly_col = '#518F57'
-    } else if (model == 'SSEBop') {
-        daily_col = '#9CD0FF'
-        monthly_col = '#5CA1FF'
-    } 
+    # set color parameters
+    daily_col = "tan1"
+    pixel_col = "steelblue1"
+    monthly_col = "tomato1"
     
     # make empty plot
     plot(x~y, xlim=x, ylim=y, xlab="", ylab="", xaxt="n", las=1, cex.axis=1.8, col="white")
@@ -93,29 +143,10 @@ visualize = function (df, crop, state, year, model) {
     
     # add graph data
     lines(daily~c(0:11), data=df, col=daily_col, lty=1, lwd=3.5)
+    lines(pixel~c(0:11), data=df, col=pixel_col, lty=1, lwd=3.5)
     lines(monthly~c(0:11), data=df, col=monthly_col, lty=1, lwd=3.5)
 
     # add legend
-    legend("topright", inset=c(.008,.02), legend=c("Daily", "Monthly"), 
-           col=c(daily_col, monthly_col), pch=16, xpd=TRUE, bty="n", cex=1.8)
-    
-    ## BAR PLOT 
-    # create fake barplot then plot over to avoid gridlines
-    barplot(df$perc_diff~months, names.arg=months, col="white", xlab="", ylab="", xaxt="n", yaxt="n", las=1)
-    grid()
-    barplot(df$perc_diff~months, names.arg=months, col=monthly_col, add=TRUE, cex.axis=1.8, cex.names=1.8)
-
-    # add barplot labels for title
-    title(main="Percent Difference by Month", cex.main=2.1, line=2)
-    
-    # add graph labels for axis
-    title(xlab="Month", cex.lab=2, line=4)
-    title(ylab="% Error", cex.lab=2, line=2, outer=TRUE, adj=.56)
-}
-
-# beautiful table 
-nice_table = function (df) {
-    df %>%
-        kbl() %>%
-        kable_styling()
+    legend("topright", inset=c(.008,.02), legend=c("Approximation", "Pixel Interpolation", "Monthly"), 
+           col=c(daily_col, pixel_col, monthly_col), pch=16, xpd=TRUE, bty="n", cex=1.8)
 }

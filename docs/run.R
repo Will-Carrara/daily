@@ -14,7 +14,7 @@ data = polygons
 rmarkdown::render("index.Rmd", output_file='index.html') 
 
 # models used for comparison
-models = c('eeMETRIC', 'geeSEBAL', 'DisALEXI', 'PTJPL', 'SIMS', 'SSEBop')
+models = c('eeMETRIC', 'geeSEBAL', 'DisALEXI', 'PTJPL', 'SSEBop')
 
 # request year
 year = 2020
@@ -45,28 +45,36 @@ for (model in models) {
         # get spatial coordinates
         geometry = unlist(row$geometry)
         
-        # make api request for monthly data
+        # make api request for monthly data 
         monthly = request(geometry, model, crop_type, interval='monthly', year)
         
-        # make api request for daily data
+        # make api request for daily non-pixel interpolated data
         daily = request(geometry, model, crop_type, interval='daily', year)
+        
+        # make api request for daily pixel interpolated data
+        pixel = request_pixel(geometry, model, crop_type, interval='daily', year)
         
         # aggregate daily data 
         daily_agg = rowsum(daily$et, format(daily$time, "%Y-%m"))
         monthly$daily = daily_agg
         
+        # aggregate daily pixel data 
+        pixel_agg= rowsum(pixel$et, format(pixel$time, "%Y-%m"))
+        monthly$pixel = pixel_agg
+        
         # create new storage object
         df = monthly
-        names(df) = c("time", "monthly", "daily")
+        names(df) = c("time", "monthly", "daily", "pixel")
         
-        # calculate absolute difference 
-        df$abs_diff = abs(df$monthly - df$daily)
+        # calculate absolute difference (daily approximation)
+        df$abs_diff = round(abs(df$monthly - df$daily), 2)
+        # calculate mean percent difference (daily approximation)
+        df$perc_diff = round(abs(((df$monthly - df$daily) / (df$monthly))*100), 2)
         
-        # calculate mean percent difference
-        df$perc_diff = abs(round(((df$monthly - df$daily) / (df$monthly))*100, 2))
-        
-        print(crop)
-        print(df)
+        # calculate absolute difference (daily pixel interpolation)
+        df$abs_diff_pixel = round(abs(df$monthly - df$pixel), 2)
+        # calculate mean percent difference (daily pixel interpolation)
+        df$perc_diff_pixel = round(abs(((df$monthly - df$pixel) / (df$monthly))*100), 2)
         
         # store all the data
         dfs[[count]] = df
