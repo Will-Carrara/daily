@@ -32,12 +32,9 @@ options(width=500)
 
 # script code
 source('../utils/utils.R')
-
-# table package
-library(kableExtra)
 ```
 
-```{r}
+```{r, message=FALSE}
 count = 0 
 for (df in dfs) {
     count = count + 1

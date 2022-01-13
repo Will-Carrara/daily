@@ -2,7 +2,7 @@
 library(httr)
 
 # api call (non-pixel based)
-request = function (geometry, model, crop_type, interval, year) {
+request = function (geometry, model, crop_type, interval, best_effort, year) {
     
     # dates for comparison
     start_date = paste0(year, '-01-01')
@@ -28,6 +28,7 @@ request = function (geometry, model, crop_type, interval, year) {
             moving_average = 0,
             units = 'metric',
             provisional = 'False',
+            best_effort = best_effort,
             output_file_format = 'csv'
         ),
         encode = 'json')

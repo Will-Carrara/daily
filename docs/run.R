@@ -46,20 +46,20 @@ for (model in models) {
         geometry = unlist(row$geometry)
         
         # make api request for monthly data 
-        monthly = request(geometry, model, crop_type, interval='monthly', year)
+        monthly = request(geometry, model, crop_type, interval='monthly', best_effort='True', year)
         
         # make api request for daily non-pixel interpolated data
-        daily = request(geometry, model, crop_type, interval='daily', year)
+        daily = request(geometry, model, crop_type, interval='daily', best_effort='True', year)
         
         # make api request for daily pixel interpolated data
         pixel = request_pixel(geometry, model, crop_type, interval='daily', year)
         
         # aggregate daily data 
-        daily_agg = rowsum(daily$et, format(daily$time, "%Y-%m"))
+        daily_agg = rowsum(daily$et, format(daily$time, "%Y-%m"), na.rm = TRUE)
         monthly$daily = daily_agg
         
         # aggregate daily pixel data 
-        pixel_agg= rowsum(pixel$et, format(pixel$time, "%Y-%m"))
+        pixel_agg = rowsum(pixel$et, format(pixel$time, "%Y-%m"), na.rm = TRUE)
         monthly$pixel = pixel_agg
         
         # create new storage object
