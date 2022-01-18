@@ -24,6 +24,9 @@ output:
 
 
 ```{r, include=FALSE}
+library(png)
+library(grid)
+
 # configure graphs
 knitr::opts_chunk$set(comment=NA, echo=FALSE, fig.width=20, fig.height=9, fig.align="center", warning=FALSE)
 
@@ -48,8 +51,15 @@ for (df in dfs) {
     # plot timeseries
     visualize(df, crop, state, year, model)
     
+    # add image
+    img <- readPNG(paste0("../graphics/", tolower(crop), ".png"))
+    grid.newpage()
+    grid.raster(img)
+    
+    # add table
     print(df)
 }
 ```
+
 
 
